@@ -48,13 +48,21 @@ def processar(filename):
             ai = ais[area]
             if sal > ai[0]:
                 ai[0] = sal
+                ai[4] = [func]
+            elif sal == ai[0]:
+                ai[4].append(func)
+
             if sal < ai[1]:
                 ai[1] = sal
+                ai[5] = [func]
+            elif sal == ai[1]:
+                ai[5].append(func)
+
             ai[2] += sal
             ai[3] += 1
-            ai[4].append(func)
         except:
-            ais[area] = [sal, sal, sal, 1, [func]]
+            # maior, menor, soma, qtde, funcs que ganham mais, funcs que ganham menos
+            ais[area] = [sal, sal, sal, 1, [func], [func]]
 
         try:
             si = sis[sob]
@@ -66,6 +74,7 @@ def processar(filename):
             elif sal == _sal:
                 si[2].append(func)
         except:
+            # maior, qtde, funcs que ganham mais
             sis[sob] = [sal, 1, [func]]
 
     return(dados['funcionarios'], areas_descr, gmaior, gmenor, gsoma, gqtde, fmais, fmenos, ais, sis)
@@ -87,13 +96,12 @@ def gerar_saida(funcs_list, areas_descr, gmaior, gmenor, gsoma, gqtde, fmais, fm
 
     # # QUESTÃO 2
 
-    for area, (amaior, amenor, asoma, aqtde, afuncs) in ais.items():
+    for area, (_, _, asoma, aqtde, afuncsmais, afuncsmenos) in ais.items():
         area_descr = areas_descr[area]
-        for func in afuncs:
-            if func['salario'] == amaior:
-                out('area_max|{}|{} {}|{:.2f}'.format(area_descr, func['nome'], func['sobrenome'], func['salario']))
-            if func['salario'] == amenor:
-                out('area_min|{}|{} {}|{:.2f}'.format(area_descr, func['nome'], func['sobrenome'], func['salario']))
+        for func in afuncsmais:
+            out('area_max|{}|{} {}|{:.2f}'.format(area_descr, func['nome'], func['sobrenome'], func['salario']))
+        for func in afuncsmenos:
+            out('area_min|{}|{} {}|{:.2f}'.format(area_descr, func['nome'], func['sobrenome'], func['salario']))
 
         out("area_avg|{a}|{media:.2f}".format(a=area_descr, media=asoma / aqtde))
 
